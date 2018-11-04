@@ -1,4 +1,5 @@
 #![no_std] // don't link the Rust standard library
+#![feature(abi_x86_interrupt)]
 
 extern crate bootloader_precompiled;
 extern crate spin;
@@ -14,8 +15,11 @@ extern crate array_init;
 extern crate std;
 
 // We need to add `pub` here to make them accessible from the outside
+#[macro_use]
 pub mod vga_buffer;
+#[macro_use]
 pub mod serial;
+pub mod interrupts;
 
 pub unsafe fn exit_qemu() {
     use x86_64::instructions::port::Port;
