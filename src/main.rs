@@ -13,10 +13,13 @@ use core::panic::PanicInfo;
 #[cfg(not(test))]
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
+    use blog_os::interrupts::PICS;
     println!("Hello World{}", "!");
 
     blog_os::gdt::init();
     blog_os::interrupts::init_idt();
+    unsafe { PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
 
     println!("It did not crash!");
     blog_os::hlt_loop();
