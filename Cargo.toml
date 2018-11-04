@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Sai Wolf <saiwolf@swmnu.net>", "Philipp Oppermann <dev@phil-opp.com>"]
 edition = "2018"
 
+[features]
+integration-test = []
+
 [package.metadata.bootimage]
 default-target = "x86_64-blog_os.json"
 
@@ -14,6 +17,8 @@ array-init = "0.0.3"
 bootloader_precompiled = "0.2.0"
 volatile = "0.2.3"
 spin = "0.4.9"
+uart_16550 = "0.1.0"
+x86_64 = "0.2.8"
 
 [dependencies.lazy_static]
 version = "1.0"

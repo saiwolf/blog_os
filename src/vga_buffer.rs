@@ -125,10 +125,11 @@ impl fmt::Write for Writer {
 }
 
 // Macros below
+#[macro_export]
 macro_rules! print {
     ($($arg:tt)*) => ($crate::vga_buffer::print(format_args!($($arg)*)));
 }
-
+#[macro_export]
 macro_rules! println {
     () => (print!("\n"));
     ($fmt:expr) => (print!(concat!($fmt, "\n")));
