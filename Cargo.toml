@@ -7,6 +7,9 @@ edition = "2018"
 [package.metadata.bootimage]
 default-target = "x86_64-blog_os.json"
 
+[dev-dependencies]
+array-init = "0.0.3"
+
 [dependencies]
 bootloader_precompiled = "0.2.0"
 volatile = "0.2.3"
