@@ -14,9 +14,33 @@ use core::panic::PanicInfo;
 #[cfg(not(test))]
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
-    use blog_os::interrupts::PICS;
-    println!("Hello World{}", "!");
+    // import the Cr3 register functions
+    use x86_64::registers::control::Cr3;
 
+    // Import the `PageTable` type from the x86_64 crate
+    use x86_64::structures::paging::PageTable;
+
+    // Set `level_4_table_ptr` to the last virtual address
+    // space address: 0xFFFF_FFFF_FFFF_F000 casted as a pointer
+    // to the `PageTable` type. This allows us to bypass using
+    // unsafe raw pointers.   
+    let level_4_table_ptr = 0xffff_ffff_ffff_f000 as *const PageTable;
+
+    // Set `level_4_table` using an unsafe reference to
+    // `level_4_table_ptr`
+    let level_4_table = unsafe {&*level_4_table_ptr};
+
+    // `For` loop that will print out the first ten entries in
+    // the page table by using .offset()
+    for i in 0..10 {        
+        println!("Entry {}: {:?}", i, level_4_table[i]);
+    }
+
+    // Import the PICS functions for our interrupts
+    use blog_os::interrupts::PICS;    
+
+    // set up the IDT first, otherwise we would enter a boot loop instead of
+    // invoking our page fault handler
     blog_os::gdt::init();
     blog_os::interrupts::init_idt();
     unsafe { PICS.lock().initialize() };

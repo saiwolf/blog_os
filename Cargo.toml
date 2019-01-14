@@ -18,7 +18,7 @@ bootloader_precompiled = "0.2.0"
 volatile = "0.2.3"
 spin = "0.4.9"
 uart_16550 = "0.1.0"
-x86_64 = "0.2.8"
+x86_64 = "0.3.5"
 pic8259_simple = "0.1.1"
 pc-keyboard = "0.3.1"
 
