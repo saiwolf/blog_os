@@ -5,6 +5,7 @@
 #[macro_use]
 extern crate blog_os;
 extern crate x86_64;
+extern crate pc_keyboard;
 
 use core::panic::PanicInfo;
 
