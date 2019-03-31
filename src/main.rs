@@ -8,33 +8,11 @@ extern crate x86_64;
 extern crate pc_keyboard;
 
 use core::panic::PanicInfo;
+use bootloader::{BootInfo, entry_point};
 
-/// This function is the entry point, since the linker looks for a function
-/// named `_start` by default.
+entry_point!(kernel_main);
 #[cfg(not(test))]
-#[no_mangle] // don't mangle the name of this function
-pub extern "C" fn _start() -> ! {
-    // import the Cr3 register functions
-    use x86_64::registers::control::Cr3;
-
-    // Import the `PageTable` type from the x86_64 crate
-    use x86_64::structures::paging::PageTable;
-
-    // Set `level_4_table_ptr` to the last virtual address
-    // space address: 0xFFFF_FFFF_FFFF_F000 casted as a pointer
-    // to the `PageTable` type. This allows us to bypass using
-    // unsafe raw pointers.   
-    let level_4_table_ptr = 0xffff_ffff_ffff_f000 as *const PageTable;
-
-    // Set `level_4_table` using an unsafe reference to
-    // `level_4_table_ptr`
-    let level_4_table = unsafe {&*level_4_table_ptr};
-
-    // `For` loop that will print out the first ten entries in
-    // the page table by using .offset()
-    for i in 0..10 {        
-        println!("Entry {}: {:?}", i, level_4_table[i]);
-    }
+fn kernel_main(boot_info: &'static BootInfo) -> ! {    
 
     // Import the PICS functions for our interrupts
     use blog_os::interrupts::PICS;    
@@ -45,6 +23,21 @@ pub extern "C" fn _start() -> ! {
     blog_os::interrupts::init_idt();
     unsafe { PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
+
+    use blog_os::memory;
+    use x86_64::{structures::paging::Page, VirtAddr};
+
+    // initialize a mapper
+    let mut mapper = unsafe { memory::init(boot_info.physical_memory_offset) };
+    let mut frame_allocator = memory::init_frame_allocator(&boot_info.memory_map);
+
+    // map a previously unmapped page
+    let page = Page::containing_address(VirtAddr::new(0xdeadbeaf000));
+    memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
+
+    // write the string `New!` to the screen through the new mapping
+    let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
+    unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e)};
 
     println!("It did not crash!");
     blog_os::hlt_loop();

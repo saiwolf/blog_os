@@ -1,7 +1,7 @@
 #![no_std] // don't link the Rust standard library
 #![feature(abi_x86_interrupt)]
 
-extern crate bootloader_precompiled;
+extern crate bootloader;
 extern crate spin;
 extern crate volatile;
 #[macro_use]
@@ -19,6 +19,7 @@ pub mod vga_buffer;
 pub mod gdt;
 pub mod interrupts;
 pub mod serial;
+pub mod memory;
 
 pub unsafe fn exit_qemu() {
     use x86_64::instructions::port::Port;

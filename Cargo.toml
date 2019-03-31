@@ -14,11 +14,11 @@ default-target = "x86_64-blog_os.json"
 array-init = "0.0.3"
 
 [dependencies]
-bootloader_precompiled = "0.2.0"
+bootloader = { version = "0.4.0", features = ["map_physical_memory"]}
 volatile = "0.2.3"
 spin = "0.4.9"
 uart_16550 = "0.1.0"
-x86_64 = "0.3.5"
+x86_64 = "0.5.2"
 pic8259_simple = "0.1.1"
 pc-keyboard = "0.3.1"
 

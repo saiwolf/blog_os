@@ -10,7 +10,7 @@ extern crate x86_64;
 #[macro_use]
 extern crate lazy_static;
 
-use x86_64::structures::idt::{InterruptDescriptorTable, ExceptionStackFrame};
+use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 use core::panic::PanicInfo;
 use blog_os::exit_qemu;
@@ -23,7 +23,7 @@ pub extern "C" fn _start() -> ! {
     init_test_idt();
 
     // invoke a breakpoint exception
-    x86_64::instructions::int3();
+    x86_64::instructions::interrupts::int3();
 
     match BREAKPOINT_HANDLER_CALLED.load(Ordering::SeqCst) {
         1 => serial_println!("ok"),
@@ -62,7 +62,7 @@ pub fn init_test_idt() {
 }
 
 extern "x86-interrupt" fn breakpoint_handler(
-    _stack_frame: &mut ExceptionStackFrame)
+    _stack_frame: &mut InterruptStackFrame)
 {
     BREAKPOINT_HANDLER_CALLED.fetch_add(1, Ordering::SeqCst);
 }
